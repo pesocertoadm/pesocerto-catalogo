@@ -41,8 +41,8 @@
     /* ── HEADER ── */
     header { background: var(--navy); padding: 0 16px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 16px rgba(0,0,0,.3); }
     .header-inner { max-width: 1280px; margin: 0 auto; display: flex; align-items: center; gap: 14px; height: 64px; }
-    .brand { font-family: 'Barlow Condensed', sans-serif; font-size: 1.5rem; font-weight: 900; color: var(--white); letter-spacing: 1px; white-space: nowrap; }
-    .brand span { color: var(--gold); }
+    .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .brand img { height: 40px; width: auto; border-radius: 6px; }
     .catalog-badge { background: var(--red); color: var(--white); font-size: 0.65rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; white-space: nowrap; }
     .search-wrap { flex: 1; max-width: 460px; margin: 0 auto; }
     #search-input { width: 100%; background: rgba(255,255,255,.10); border: 1.5px solid rgba(255,255,255,.18); border-radius: 8px; color: var(--white); padding: 10px 16px 10px 40px; font-size: 0.9rem; font-family: 'Barlow', sans-serif; outline: none; transition: border-color .2s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='rgba(255,255,255,0.5)' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.868-3.834zm-5.242 1.156a5 5 0 1 1 0-10 5 5 0 0 1 0 10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: 12px center; }
@@ -203,7 +203,9 @@
 <!-- ── HEADER ── -->
 <header>
   <div class="header-inner">
-    <div class="brand">PESO <span>CERTO</span></div>
+    <div class="brand">
+      <img src="logo.png" alt="Peso Certo" />
+    </div>
     <div class="catalog-badge">CATÁLOGO</div>
     <div class="search-wrap">
       <input id="search-input" type="text" placeholder="Buscar produto..." autocomplete="off" />
