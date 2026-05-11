@@ -10,6 +10,6 @@ const CONFIG = {
 
   // Cole aqui a URL gerada pelo Google Apps Script
   // Após seguir o GUIA_CONFIGURACAO.md, substitua o texto abaixo
-  API_URL: "COLE_AQUI_A_URL_DO_APPS_SCRIPT"
+  API_URL: "https://script.google.com/macros/s/AKfycbzXL81mwQ5V76iDDRhWhIZQgmu0Piks8hZjUfvSVmUryu5lwMYgQniRpNN4u8a4rKlq5g/exec"
 
 };
