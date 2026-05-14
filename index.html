@@ -173,6 +173,32 @@
     #toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--navy); color: var(--white); padding: 12px 24px; border-radius: 30px; font-size: 0.88rem; font-weight: 600; opacity: 0; transition: all .3s; z-index: 9000; pointer-events: none; white-space: nowrap; }
     #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+    /* ── EDITOR DE MÍDIA ── */
+    #modal-midia { max-width: 560px; }
+    .midia-header { background: var(--navy2); padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; }
+    .midia-header h2 { font-family: 'Barlow Condensed', sans-serif; font-size: 1.3rem; font-weight: 900; color: var(--white); letter-spacing: 1px; }
+    .midia-body { padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+    .midia-section-title { font-family: 'Barlow Condensed', sans-serif; font-size: 0.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--navy); margin-bottom: 10px; }
+    .midia-list { display: flex; flex-direction: column; gap: 8px; }
+    .midia-item { display: flex; align-items: center; gap: 10px; background: var(--bg2); border-radius: 8px; padding: 8px 12px; }
+    .midia-item img { width: 52px; height: 52px; object-fit: cover; border-radius: 6px; flex-shrink: 0; }
+    .midia-item-icon { width: 52px; height: 52px; background: #fdecea; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; }
+    .midia-item-url { flex: 1; font-size: 0.75rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .midia-item-label { font-size: 0.75rem; color: var(--text2); font-weight: 600; }
+    .btn-rem-midia { background: none; border: none; color: var(--muted); font-size: 1rem; cursor: pointer; padding: 4px 6px; border-radius: 4px; transition: all .15s; flex-shrink: 0; }
+    .btn-rem-midia:hover { background: #fdecea; color: var(--red); }
+    .midia-empty { color: var(--muted); font-size: 0.82rem; font-style: italic; padding: 4px 0; }
+    .midia-add-row { display: flex; gap: 8px; align-items: flex-start; }
+    .midia-add-row input { flex: 1; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 7px; font-family: 'Barlow', sans-serif; font-size: 0.85rem; outline: none; transition: border-color .2s; }
+    .midia-add-row input:focus { border-color: var(--navy); }
+    .btn-add-midia { background: var(--navy); color: var(--white); border: none; border-radius: 7px; font-family: 'Barlow', sans-serif; font-size: 0.82rem; font-weight: 700; padding: 10px 16px; cursor: pointer; white-space: nowrap; transition: background .2s; }
+    .btn-add-midia:hover { background: var(--navy2); }
+    .drive-hint { font-size: 0.72rem; color: var(--muted); margin-top: 5px; }
+    .drive-hint span { color: var(--green); font-weight: 600; }
+    .midia-actions { display: flex; justify-content: flex-end; gap: 12px; padding: 0 24px 24px; }
+    .btn-editar-midia { background: none; border: 1.5px solid var(--border); color: var(--text2); border-radius: 7px; font-family: 'Barlow', sans-serif; font-size: 0.82rem; font-weight: 600; padding: 8px 16px; cursor: pointer; transition: all .2s; }
+    .btn-editar-midia:hover { border-color: var(--navy); color: var(--navy); background: var(--bg2); }
+
     @media(max-width:768px){
       .brand { font-size: 1.1rem; }
       .catalog-badge { display: none; }
@@ -265,6 +291,7 @@
         <div id="mp-gallery"></div>
       </div>
       <div class="modal-footer-actions">
+        <button class="btn-editar-midia" id="btn-editar-midia">📷 Editar Mídia</button>
         <button class="btn-delete" id="btn-delete-produto">🗑 Remover produto</button>
       </div>
     </div>
@@ -345,6 +372,50 @@
 
 <!-- ── TOAST ── -->
 <div id="toast"></div>
+
+<!-- ── MODAL EDITOR DE MÍDIA ── -->
+<div class="modal-overlay" id="modal-midia-overlay">
+  <div class="modal-box" id="modal-midia">
+    <div class="midia-header">
+      <h2>📷 EDITAR MÍDIA</h2>
+      <button class="modal-close-btn" data-close="modal-midia-overlay">✕</button>
+    </div>
+    <div class="midia-body">
+
+      <!-- Fotos -->
+      <div>
+        <div class="midia-section-title">🖼 Fotos do produto</div>
+        <div class="midia-list" id="midia-fotos-list"></div>
+        <div style="margin-top:12px">
+          <div class="midia-add-row">
+            <input type="text" id="inp-nova-foto" placeholder="Cole o link da foto (Drive, URL direta...)" autocomplete="off" />
+            <button class="btn-add-midia" id="btn-add-foto">＋ Adicionar</button>
+          </div>
+          <div class="drive-hint">
+            Links do Google Drive são convertidos automaticamente. <span>✓ Funciona com qualquer URL pública.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vídeos -->
+      <div>
+        <div class="midia-section-title">🎬 Vídeos</div>
+        <div class="midia-list" id="midia-videos-list"></div>
+        <div style="margin-top:12px">
+          <div class="midia-add-row">
+            <input type="text" id="inp-novo-video" placeholder="Cole o link do vídeo (YouTube, etc...)" autocomplete="off" />
+            <button class="btn-add-midia" id="btn-add-video">＋ Adicionar</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="midia-actions">
+      <button class="btn-cancelar" data-close="modal-midia-overlay">Cancelar</button>
+      <button class="btn-salvar" id="btn-salvar-midia">💾 SALVAR MÍDIA</button>
+    </div>
+  </div>
+</div>
 
 <script>
 // ════════════════════════════════════════════════════════════
@@ -582,6 +653,134 @@ async function confirmDelete(prod) {
     setTimeout(async () => { await loadProducts(); buildTabs(); renderAll(); }, 1500);
   } catch(e) { showToast('Erro ao remover produto.'); }
 }
+
+// ════════════════════════════════════════════════════════════
+//  EDITOR DE MÍDIA
+// ════════════════════════════════════════════════════════════
+let midiaState = { prod: null, forn: null, fotos: [], videos: [] };
+
+// Converte link do Google Drive para URL direta
+function convertDriveLink(url) {
+  url = url.trim();
+  // Formato: /file/d/ID/view
+  const m1 = url.match(/\/file\/d\/([^/\?&]+)/);
+  if (m1) return `https://drive.google.com/uc?export=view&id=${m1[1]}`;
+  // Formato: id=ID
+  const m2 = url.match(/[?&]id=([^&]+)/);
+  if (m2) return `https://drive.google.com/uc?export=view&id=${m2[1]}`;
+  return url; // já é URL direta
+}
+
+function renderMidiaList() {
+  // Fotos
+  const fotosEl = document.getElementById('midia-fotos-list');
+  fotosEl.innerHTML = midiaState.fotos.length === 0
+    ? `<p class="midia-empty">Nenhuma foto cadastrada.</p>`
+    : midiaState.fotos.map((url, i) => `
+        <div class="midia-item">
+          <img src="${url}" alt="Foto ${i+1}" onerror="this.style.display='none'" />
+          <span class="midia-item-url" title="${url}">${url}</span>
+          <button class="btn-rem-midia" data-type="foto" data-idx="${i}" title="Remover">🗑</button>
+        </div>`).join('');
+
+  // Vídeos
+  const videosEl = document.getElementById('midia-videos-list');
+  videosEl.innerHTML = midiaState.videos.length === 0
+    ? `<p class="midia-empty">Nenhum vídeo cadastrado.</p>`
+    : midiaState.videos.map((url, i) => `
+        <div class="midia-item">
+          <div class="midia-item-icon">▶</div>
+          <span class="midia-item-url" title="${url}">${url}</span>
+          <button class="btn-rem-midia" data-type="video" data-idx="${i}" title="Remover">🗑</button>
+        </div>`).join('');
+
+  // Botões de remover
+  document.querySelectorAll('.btn-rem-midia').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.dataset.idx);
+      if (btn.dataset.type === 'foto')  midiaState.fotos.splice(idx, 1);
+      else                              midiaState.videos.splice(idx, 1);
+      renderMidiaList();
+    });
+  });
+}
+
+function openModalMidia(prod, forn) {
+  midiaState = {
+    prod, forn,
+    fotos:  [...(prod.fotos  || []).filter(Boolean)],
+    videos: [...(prod.videos || []).filter(Boolean)]
+  };
+  document.getElementById('inp-nova-foto').value  = '';
+  document.getElementById('inp-novo-video').value = '';
+  renderMidiaList();
+  openOverlay('modal-midia-overlay');
+}
+
+// Botão Editar Mídia no modal do produto
+document.getElementById('btn-editar-midia').addEventListener('click', () => {
+  if (!produtoAtual) return;
+  closeOverlay('modal-produto');
+  openModalMidia(produtoAtual.prod, produtoAtual.forn);
+});
+
+// Adicionar foto
+document.getElementById('btn-add-foto').addEventListener('click', () => {
+  const inp = document.getElementById('inp-nova-foto');
+  const url = convertDriveLink(inp.value);
+  if (!url) { showToast('⚠️ Cole um link válido.'); return; }
+  midiaState.fotos.push(url);
+  inp.value = '';
+  renderMidiaList();
+});
+document.getElementById('inp-nova-foto').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('btn-add-foto').click();
+});
+
+// Adicionar vídeo
+document.getElementById('btn-add-video').addEventListener('click', () => {
+  const inp = document.getElementById('inp-novo-video');
+  const url = inp.value.trim();
+  if (!url) { showToast('⚠️ Cole um link válido.'); return; }
+  midiaState.videos.push(url);
+  inp.value = '';
+  renderMidiaList();
+});
+document.getElementById('inp-novo-video').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('btn-add-video').click();
+});
+
+// Salvar mídia
+document.getElementById('btn-salvar-midia').addEventListener('click', async () => {
+  const btn = document.getElementById('btn-salvar-midia');
+  btn.disabled = true; btn.textContent = 'Salvando...';
+  try {
+    const params = new URLSearchParams({
+      action: 'update',
+      id:     midiaState.prod.id,
+      fotos:  midiaState.fotos.join(','),
+      videos: midiaState.videos.join(',')
+    });
+    await fetch(`${CONFIG.API_URL}?${params.toString()}`);
+    closeOverlay('modal-midia-overlay');
+    showToast('✅ Mídia salva! Recarregando...');
+    setTimeout(async () => {
+      await loadProducts();
+      buildTabs();
+      renderAll();
+      // Reabre o modal do produto com dados atualizados
+      const forn = FORNECEDORES.find(f => f.id === midiaState.forn.id);
+      if (forn) {
+        const prod = forn.produtos.find(p => p.id === midiaState.prod.id);
+        if (prod) openModalProduto(prod, forn);
+      }
+    }, 1500);
+  } catch(e) {
+    showToast('Erro ao salvar. Verifique a conexão.');
+  } finally {
+    btn.disabled = false; btn.textContent = '💾 SALVAR MÍDIA';
+  }
+});
 
 // ════════════════════════════════════════════════════════════
 //  MODAL CADASTRO
