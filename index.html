@@ -196,6 +196,9 @@
     .drive-hint { font-size: 0.72rem; color: var(--muted); margin-top: 5px; }
     .drive-hint span { color: var(--green); font-weight: 600; }
     .midia-actions { display: flex; justify-content: flex-end; gap: 12px; padding: 0 24px 24px; }
+    .modal-modelo { display: inline-block; background: var(--gold); color: var(--navy); font-family: 'Barlow Condensed', sans-serif; font-size: 0.85rem; font-weight: 900; letter-spacing: 2px; padding: 3px 10px; border-radius: 4px; margin-top: 6px; text-transform: uppercase; }
+    .btn-fabricante { display: inline-flex; align-items: center; gap: 8px; background: none; border: 1.5px solid var(--border); color: var(--text2); border-radius: 7px; font-family: 'Barlow', sans-serif; font-size: 0.82rem; font-weight: 600; padding: 8px 16px; cursor: pointer; text-decoration: none; transition: all .2s; margin-bottom: 20px; }
+    .btn-fabricante:hover { border-color: var(--navy); color: var(--navy); background: var(--bg2); }
     .btn-editar-midia { background: none; border: 1.5px solid var(--border); color: var(--text2); border-radius: 7px; font-family: 'Barlow', sans-serif; font-size: 0.82rem; font-weight: 600; padding: 8px 16px; cursor: pointer; transition: all .2s; }
     .btn-editar-midia:hover { border-color: var(--navy); color: var(--navy); background: var(--bg2); }
 
@@ -272,6 +275,10 @@
       <div>
         <div class="modal-supplier-tag" id="mp-fornecedor"></div>
         <div class="modal-title" id="mp-nome"></div>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:6px;flex-wrap:wrap">
+          <span id="mp-modelo-wrap" style="display:none;background:rgba(230,168,23,0.18);border:1px solid var(--gold);border-radius:5px;padding:3px 10px;font-family:'Barlow Condensed',sans-serif;font-size:0.9rem;font-weight:700;color:var(--gold);letter-spacing:1px"></span>
+          <a id="mp-link-fabricante" href="#" target="_blank" rel="noopener" style="display:none;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.25);border-radius:5px;padding:3px 10px;font-size:0.78rem;font-weight:600;color:rgba(255,255,255,0.8);text-decoration:none">🔗 Ver no site do fabricante</a>
+        </div>
       </div>
       <button class="modal-close-btn" data-close="modal-produto">✕</button>
     </div>
@@ -327,8 +334,19 @@
           <input type="text" id="inp-nome" placeholder="Ex: Câmara Fria 6m²" />
         </div>
         <div class="form-group">
+          <label>Modelo / Código *</label>
+          <input type="text" id="inp-modelo" placeholder="Ex: CCV144, NF20S" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
           <label>Destaque (opcional)</label>
           <input type="text" id="inp-destaque" placeholder="Ex: Plug & Play" />
+        </div>
+        <div class="form-group">
+          <label>Link do Fabricante (opcional)</label>
+          <input type="url" id="inp-link-fabricante" placeholder="https://..." />
         </div>
       </div>
 
@@ -583,6 +601,24 @@ function openModalProduto(prod, forn) {
   document.getElementById('mp-desc').textContent       = prod.descricao || '';
   document.getElementById('mp-destaque').style.display = prod.destaque ? 'block' : 'none';
 
+  // Modelo
+  const mpModelo = document.getElementById('mp-modelo-wrap');
+  if (prod.modelo) {
+    mpModelo.textContent  = prod.modelo;
+    mpModelo.style.display = 'inline-block';
+  } else {
+    mpModelo.style.display = 'none';
+  }
+
+  // Link fabricante
+  const mpLink = document.getElementById('mp-link-fabricante');
+  if (prod.link_fabricante) {
+    mpLink.href          = prod.link_fabricante;
+    mpLink.style.display = 'inline-block';
+  } else {
+    mpLink.style.display = 'none';
+  }
+
   // Medidas
   document.getElementById('mp-medidas').innerHTML =
     Object.entries(prod.medidas || {}).map(([k,v]) =>
@@ -628,13 +664,29 @@ function openModalProduto(prod, forn) {
 
   // Copiar
   const btnCopy = document.getElementById('btn-copy');
-  btnCopy.classList.remove('copied'); btnCopy.textContent = '📋 Copiar descrição';
+  btnCopy.classList.remove('copied'); btnCopy.textContent = '📋 Copiar para WhatsApp';
   btnCopy.onclick = () => {
-    const txt = `*${prod.nome}*\n\n${prod.descricao}\n\n📐 Especificações:\n` +
-      Object.entries(prod.medidas||{}).map(([k,v])=>`• ${k}: ${v}`).join('\n');
+    const linhas = [];
+    linhas.push(`*${prod.nome}*`);
+    if (prod.destaque) linhas.push(`_✦ ${prod.destaque}_`);
+    linhas.push('');
+    linhas.push(prod.descricao);
+    const medidas = Object.entries(prod.medidas || {});
+    if (medidas.length) {
+      linhas.push('');
+      linhas.push('📐 *Especificações Técnicas*');
+      medidas.forEach(([k, v]) => linhas.push(`• ${k}: ${v}`));
+    }
+    const videos = (prod.videos || []).filter(Boolean);
+    if (videos.length) {
+      linhas.push('');
+      linhas.push('🎬 *Vídeos*');
+      videos.forEach(u => linhas.push(u));
+    }
+    const txt = linhas.join('\n');
     navigator.clipboard.writeText(txt).then(() => {
       btnCopy.textContent = '✅ Copiado!'; btnCopy.classList.add('copied');
-      setTimeout(() => { btnCopy.textContent = '📋 Copiar descrição'; btnCopy.classList.remove('copied'); }, 2500);
+      setTimeout(() => { btnCopy.textContent = '📋 Copiar para WhatsApp'; btnCopy.classList.remove('copied'); }, 2500);
     });
   };
 
@@ -846,6 +898,8 @@ async function salvarProduto() {
 
   const dados = {
     fornecedor, fornecedor_cor: cor, nome,
+    modelo:          document.getElementById('inp-modelo').value.trim(),
+    link_fabricante: document.getElementById('inp-link-fabricante').value.trim(),
     descricao,
     destaque:  document.getElementById('inp-destaque').value.trim(),
     medidas:   medidasArr.join(' | '),
@@ -868,7 +922,7 @@ async function salvarProduto() {
 }
 
 function resetForm() {
-  ['inp-fornecedor','inp-nome','inp-destaque','inp-descricao','inp-fotos','inp-videos']
+  ['inp-fornecedor','inp-nome','inp-modelo','inp-link-fabricante','inp-destaque','inp-descricao','inp-fotos','inp-videos']
     .forEach(id => document.getElementById(id).value = '');
   document.getElementById('fornecedor-cor-wrap').style.display = 'none';
   const rows = document.getElementById('medidas-rows');
